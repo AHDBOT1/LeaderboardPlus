@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeaderboardPlus API</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: hsla(225deg,15%,14%,1);
+        }
+        header {
+            background: #2094f3;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img {
+            width: 30px;
+            height: 30px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.1s;
+        }
+        .nav-button.active, .nav-button:focus {
+            color: #004483;
+        }
+        .nav-button:hover {
+            color: #dadada;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: #176ab6;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .search-bar {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            color: white;
+            outline: none;
+            padding: 5px;
+            width: 150px;
+        }
+        .search-icon {
+            color: white;
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        /* Table of contents */
+        .toc {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            padding: 10px;
+            background-color: transparent;
+            border-right: 2px solid #ddd;
+        }
+        .toc h2 {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #00a6ff;
+        }
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        .toc li {
+            padding: 5px 0;
+            margin: 2px 0;
+            color: #ccc;
+        }
+        .toc li:hover {
+            background-color: #2094f3;
+            color: white;
+            cursor: pointer;
+        }
+        .toc ul ul {
+            padding-left: 30px;
+            color: #ccc;
+        }
+        .toc ul ul li:hover {
+            background-color: #2094f3;
+            color: white;
+        }
+        .toc a {
+            color: inherit;
+            text-decoration: none;
+        }
+        /* Main content */
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+            color: white;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .category-header {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .deprecated-header {
+            position: relative;
+        }
+        .deprecated-header span {
+            color: #f5c70e; /* Softer yellow for "Deprecated" */
+            font-weight: normal;
+            font-size: 18px;
+            margin-left: 8px;
+        }
+        .nested-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .sub-header {
+            color: #f5c70e; /* Softer yellow for sub-header */
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .code-box {
+            background-color: #2e2e2e;
+            color: white;
+            font-family: monospace;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 100%;
+            display: inline-block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            height: auto;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .footer {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #ccc;
+        }
+        .separator {
+            margin-top: 15px;
+            border-bottom: 2px solid hsl(210, 10%, 8%);
+            margin-bottom: 20px;
+        }
+        /* Lua Syntax Highlighting */
+        .code-box span.keyword {
+            color: #ff7f00;
+        }
+        .code-box span.comment {
+            color: #7f8c8d;
+        }
+        .code-box span.function {
+            color: #1abc9c;
+        }
+        .code-box span.parameter {
+            color: #a6e22e;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="https://cdn-icons-png.flaticon.com/512/1163/1163624.png" alt="Cloud Logo">
+            <span>LeaderboardPlus</span>
+        </div>
+        <nav class="nav-buttons">
+            <button class="nav-button active" onclick="setActive(this)">API</button>
+            <button class="nav-button" onclick="setActive(this)">About</button>
+            <button class="nav-button" onclick="setActive(this)">Features</button>
+            <button class="nav-button" onclick="setActive(this)">Credits</button>
+        </nav>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-bar" placeholder="Search...">
+        </div>
+    </header>
+
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ul id="toc-list">
+            <!-- Sections and items will be dynamically added here -->
+        </ul>
+    </div>
+
+    <div class="content" id="content-area">
+        <!-- Sections will be dynamically added here -->
+    </div>
+
+    <script>
+        // Function to create a new section in the Table of Contents
+        function createSection(sectionTitle) {
+            const tocList = document.getElementById('toc-list');
+            const contentArea = document.getElementById('content-area');
+
+            // Create the section item in the Table of Contents
+            const sectionItem = document.createElement('li');
+            sectionItem.innerHTML = `<a href="#${sectionTitle.toLowerCase()}">${sectionTitle}</a>`;
+            tocList.appendChild(sectionItem);
+
+            // Create the section content in the main content area
+            const sectionContent = document.createElement('div');
+            sectionContent.id = sectionTitle.toLowerCase();
+            sectionContent.classList.add('category-header');
+            sectionContent.innerText = sectionTitle;
+            contentArea.appendChild(sectionContent);
+        }
+
+        // Function to create a nested item within a section
+        function createNestedItem(sectionTitle, headerText, headerCodedBody, footerText, isDeprecated, subHeader) {
+            const section = document.getElementById(sectionTitle.toLowerCase());
+
+            // Create the nested item header
+            const nestedHeader = document.createElement('div');
+            nestedHeader.classList.add('nested-header');
+            nestedHeader.innerHTML = headerText;
+            if (isDeprecated) {
+                nestedHeader.classList.add('deprecated-header');
+                nestedHeader.innerHTML += ' <span>(Deprecated)</span>';
+            }
+            section.appendChild(nestedHeader);
+
+            // Create the optional sub-header if provided
+            if (subHeader) {
+                const subHeaderElement = document.createElement('div');
+                subHeaderElement.classList.add('sub-header');
+                subHeaderElement.innerText = subHeader;
+                section.appendChild(subHeaderElement);
+            }
+
+            // Create the nested item code box
+            const codeBox = document.createElement('div');
+            codeBox.classList.add('code-box');
+            codeBox.innerHTML = formatCodeToHTML(headerCodedBody); // Format code for syntax highlighting
+            section.appendChild(codeBox);
+
+            // Create the nested item footer
+            const footer = document.createElement('div');
+            footer.classList.add('footer');
+            footer.innerText = footerText;
+            section.appendChild(footer);
+
+            // Add a separator between nested items
+            const separator = document.createElement('div');
+            separator.classList.add('separator');
+            section.appendChild(separator);
+
+            // Update Table of Contents for nested item
+            const tocList = document.getElementById('toc-list');
+            const nestedItem = document.createElement('li');
+            nestedItem.innerHTML = `<a href="#${headerText.toLowerCase()}">${headerText}</a>`;
+            const sectionItem = tocList.querySelector(`a[href="#${sectionTitle.toLowerCase()}"]`).parentElement;
+            let nestedList = sectionItem.querySelector('ul');
+            if (!nestedList) {
+                nestedList = document.createElement('ul');
+                sectionItem.appendChild(nestedList);
+            }
+            nestedList.appendChild(nestedItem);
+        }
+
+        // Function to format Lua code into HTML with syntax highlighting
+        function formatCodeToHTML(code) {
+            // Match Lua keywords
+            code = code.replace(/\b(local|function|end|if|then|else|elseif|return|for|in|do|while|break|repeat|until|not|and|or|true|false|null|self|require|game|workspace|print)\b/g, 
+            '<span class="keyword">$1</span>');
+
+            // Match multi-line comments
+            code = code.replace(/(--\[\[.*?\]\])/gs, '<span class="comment">$1</span>');
+
+            // Match single-line comments
+            code = code.replace(/(--.*?$)/gm, '<span class="comment">$1</span>');
+
+            // Match function calls and make parentheses content green
+            code = code.replace(/(\w+\s?\()(.*?)(\))/g, function(match, p1, p2, p3) {
+                return '<span class="function">' + p1 + '</span><span class="parameter" style="color: #a6e22e;">' + p2 + '</span><span class="function">' + p3 + '</span>';
+            });
+
+            return code;
+        }
+
+        // Simplified version of createNestedItem for easier code entry
+        function addCodeSection(sectionTitle, headerText, codeText, footerText, isDeprecated = false, subHeader = '') {
+            createNestedItem(sectionTitle, headerText, codeText, footerText, isDeprecated, subHeader);
+        }
+
+        // Example usage
+        createSection('Functions');
+        addCodeSection('Functions', 'setState', 
+        `leaderboardPlus.setState("closed") -- Closes the playerList
+        --[[
+        States:
+        * unInstalled :: LeaderboardPlus isn't installed
+        * processing :: LeaderboardPlus is actively installing
+        * working :: LeaderboardPlus is processing another element
+        * closed :: LeaderboardPlus is closed
+        * open :: LeaderboardPlus is open
+        ]]`, 'Sets the active playerList state.');
+
+        createSection('Constructors')
+
+        addCodeSection('Constructors', 'Start',
+        `local leaderboardPlus = require(script.Parent.LeaderboardPlus)
+        leaderboardPlus.Start()
+        `, 'Starts the PlayerList package. (Calls both Install and Init)'
+        )
+
+        addCodeSection('Constructors', 'Install',
+        `local leaderboardPlus = require(script.Parent.LeaderboardPlus)
+        leaderboardPlus.Install()
+        `, 'Installs the entire PlayerList package.', true, 'Use Start constructor instead!');
+
+        addCodeSection('Constructors', 'Init',
+        `leaderboardPlus.Init()
+        `, 'Initializes the entire installed PlayerList package. (Must have called Install package first)', true, 'Use Start constructor instead!');
+
+    </script>
+</body>
+</html>
